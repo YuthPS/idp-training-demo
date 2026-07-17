@@ -1,0 +1,413 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>IDP Training Management System</title>
+<style>
+:root{--p:#1747b7;--pd:#103889;--g:#18864b;--o:#d97706;--r:#c93434;--bg:#f5f7fb;--bd:#dfe4ef;--t:#182033;--m:#697386;--shadow:0 8px 24px rgba(19,42,94,.08)}
+*{box-sizing:border-box}body{margin:0;font-family:Segoe UI,Arial,sans-serif;background:var(--bg);color:var(--t)}button,input,select,textarea{font:inherit}.hidden{display:none!important}
+.app{display:grid;grid-template-columns:275px 1fr;min-height:100vh}aside{background:#fff;border-right:1px solid var(--bd);position:sticky;top:0;height:100vh;overflow:auto}.brand{padding:22px;background:linear-gradient(135deg,var(--pd),#3049d8);color:#fff}.brand h1{margin:0;font-size:20px}.brand p{margin:5px 0 0;font-size:12px}.user,.org,.year{padding:16px;border-bottom:1px solid var(--bd)}.user small,.org small,.year small{display:block;color:var(--m);margin-top:4px}
+nav{padding:12px}nav button{width:100%;border:0;background:transparent;text-align:left;padding:11px 13px;border-radius:8px;margin:3px 0;cursor:pointer}nav button.active,nav button:hover{background:#eef3ff;color:var(--p);font-weight:700}
+main{min-width:0}header{height:66px;background:#fff;border-bottom:1px solid var(--bd);display:flex;justify-content:space-between;align-items:center;padding:0 24px;position:sticky;top:0;z-index:5}.page{display:none;padding:24px}.page.active{display:block}
+.row{display:flex;justify-content:space-between;align-items:flex-start;gap:14px;flex-wrap:wrap}.subtitle{color:var(--m)}.grid{display:grid;gap:16px}.metrics{grid-template-columns:repeat(4,minmax(0,1fr))}.two{grid-template-columns:1.1fr .9fr}.three{grid-template-columns:repeat(3,1fr)}
+.card{background:#fff;border:1px solid var(--bd);border-radius:14px;padding:18px;box-shadow:var(--shadow)}.metric strong{display:block;font-size:34px;margin:6px 0}.metric span,.metric small{color:var(--m)}
+.btn{border:0;border-radius:8px;padding:10px 14px;cursor:pointer;font-weight:700}.primary{background:var(--p);color:#fff}.success{background:var(--g);color:#fff}.warning{background:var(--o);color:#fff}.danger{background:var(--r);color:#fff}.light{background:#eef2f8;color:#25304a}.outline{background:#fff;border:1px solid var(--bd)}.btn:disabled{opacity:.5;cursor:not-allowed}.actions{display:flex;gap:8px;flex-wrap:wrap}
+.field{display:flex;flex-direction:column;gap:6px}.form-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px}.full{grid-column:1/-1}label{font-size:14px;font-weight:700}input,select,textarea{border:1px solid #cfd6e5;border-radius:8px;padding:10px;background:#fff}input:invalid,select:invalid,textarea:invalid{border-color:#d84c4c}textarea{min-height:95px}
+table{width:100%;border-collapse:collapse}th,td{padding:11px;border-bottom:1px solid var(--bd);text-align:left;font-size:14px;vertical-align:top}th{background:#f8faff}.status{display:inline-block;padding:5px 9px;border-radius:6px;font-size:12px;font-weight:700}.Pending{background:#fff0d8;color:#995a00}.Approved,.Active{background:#e5f6ea;color:#15723b}.Completed{background:#e8efff;color:#184aad}.Returned,.Rejected,.Inactive{background:#fde8e8;color:#a52929}
+.tabs{display:flex;gap:7px;flex-wrap:wrap;margin-bottom:16px}.tabs button{border:1px solid var(--bd);background:#fff;padding:9px 12px;border-radius:8px;cursor:pointer}.tabs button.active{background:var(--p);color:#fff}.tab{display:none}.tab.active{display:block}
+.notice{display:none;padding:11px;border-radius:8px;margin-bottom:14px}.notice.show{display:block}.notice.ok{background:#e8f7ec;color:#146a31}.notice.err{background:#fde8e8;color:#9b1c1c}.notice.info{background:#e8efff;color:#184aad}
+.modal{position:fixed;inset:0;background:rgba(12,25,55,.55);display:none;place-items:center;padding:20px;z-index:200}.modal.show{display:grid}.modal-card{width:min(760px,100%);max-height:90vh;overflow:auto;background:#fff;border-radius:15px;padding:20px;box-shadow:0 30px 90px rgba(0,0,0,.25)}
+.login{position:fixed;inset:0;z-index:300;display:grid;place-items:center;padding:22px;background:linear-gradient(135deg,#0f2f73,#214bb6 55%,#6c3bd1)}.login-card{width:min(860px,100%);display:grid;grid-template-columns:1fr 1fr;background:#fff;border-radius:20px;overflow:hidden}.login-brand{padding:38px;color:#fff;background:linear-gradient(160deg,#102f73,#3c4fd8)}.login-form{padding:38px}.login-form .field{margin-top:12px}
+.small{font-size:12px;color:var(--m)}.required::after{content:" *";color:var(--r)}
+@media(max-width:980px){.app{grid-template-columns:1fr}aside{position:relative;height:auto}.metrics,.two,.three,.form-grid{grid-template-columns:1fr 1fr}}@media(max-width:680px){.login-card,.metrics,.two,.three,.form-grid{grid-template-columns:1fr}.page{padding:17px}}
+</style>
+</head>
+<body>
+<div class="login" id="login">
+  <div class="login-card">
+    <div class="login-brand">
+      <div>DEMO TRAINING ORGANIZATION</div>
+      <h1>Integrated Development Program</h1>
+      <p>Division and Section based training management.</p>
+      <p><b>Organization</b><br>Division → Section → Employee</p>
+      <p><b>Approval</b><br>Section approval group with optional Division escalation.</p>
+    </div>
+    <div class="login-form">
+      <h2>Welcome to IDP Portal</h2><div class="subtitle">Prototype login</div>
+      <div class="field"><label class="required">Full Name</label><input id="loginName" value="Alex Morgan" required></div>
+      <div class="field"><label class="required">Work Email</label><input id="loginEmail" type="email" value="alex.morgan@example.com" required></div>
+      <div class="field"><label class="required">Role</label><select id="loginRole" required><option>Employee</option><option>Section Supervisor</option><option>Division Supervisor</option><option>Approver</option><option selected>Administrator</option><option>Executive</option></select></div>
+      <div class="field"><label>Division</label><select id="loginDivision"></select></div>
+      <div class="field"><label>Section</label><select id="loginSection"></select></div>
+      <button class="btn primary" style="width:100%;margin-top:18px" id="loginBtn">Continue to App</button>
+    </div>
+  </div>
+</div>
+
+<div class="app">
+<aside>
+  <div class="brand"><h1>IDP TRAINING APP</h1><p>Integrated Development Program</p></div>
+  <div class="user"><strong id="sideName"></strong><small id="sideRole"></small></div>
+  <nav id="nav"></nav>
+  <div class="org"><b>Organization</b><small id="sideDivision"></small><small id="sideSection"></small></div>
+  <div class="year"><b>Active Program Year</b><small>Jul 1, 2026 – Jun 30, 2027</small><small>Target: 80 Hours</small></div>
+</aside>
+<main>
+<header><strong>IDP Training Management System</strong><div class="actions"><span id="headerUser"></span><button class="btn light" id="logoutBtn">Sign Out</button></div></header>
+
+<section class="page active" id="dashboard">
+  <div class="row"><div><h2>Employee Dashboard</h2><div class="subtitle">Training progress for the active program year.</div></div><button class="btn light" id="exportEmployeeBtn">Export</button></div>
+  <div class="grid metrics" style="margin-top:16px"><div class="card metric"><span>Required Hours</span><strong>80</strong><small>Annual target</small></div><div class="card metric"><span>Completed Hours</span><strong id="completedHours">45</strong><small>Approved</small></div><div class="card metric"><span>Remaining Hours</span><strong id="remainingHours">35</strong><small>To target</small></div><div class="card metric"><span>Progress</span><strong id="progressPct">56%</strong><small>On track</small></div></div>
+  <div class="grid two" style="margin-top:16px"><div class="card"><h3>Recent Requests</h3><table><thead><tr><th>Training</th><th>Status</th><th>Hours</th></tr></thead><tbody id="dashboardRows"></tbody></table></div><div class="card"><h3>Organization</h3><p><b>Division:</b> <span data-division></span></p><p><b>Section:</b> <span data-section></span></p><p><b>Section Approval Group:</b> <span id="dashboardApprovalGroup"></span></p><p><b>Escalation:</b> <span id="dashboardEscalationGroup"></span></p></div></div>
+</section>
+
+<section class="page" id="new-request">
+  <div class="row"><div><h2>New Training Request</h2><div class="subtitle">Approval routing is assigned automatically from the employee's Section.</div></div></div>
+  <div id="requestNotice" class="notice"></div>
+  <div class="card"><form id="requestForm" novalidate><div class="form-grid">
+    <div class="field"><label>Employee</label><input id="requestEmployee" disabled></div>
+    <div class="field"><label>Division</label><input id="requestDivision" disabled></div>
+    <div class="field"><label>Section</label><input id="requestSection" disabled></div>
+    <div class="field"><label>Approval Group</label><input id="requestApprovalGroup" disabled></div>
+    <div class="field full"><label class="required">Training Title</label><input id="trainingTitle" maxlength="150" required></div>
+    <div class="field"><label class="required">Platform</label><select id="platform" required><option value="">Select</option><option>Microsoft Learn</option><option>LinkedIn Learning</option><option>Info-Tech</option><option>External Provider</option></select></div>
+    <div class="field"><label class="required">Requested Hours</label><input id="requestedHours" type="number" min="0.5" max="80" step="0.5" required></div>
+    <div class="field"><label>Estimated Cost</label><input id="estimatedCost" type="number" min="0" step="0.01" value="0"></div>
+    <div class="field full"><label class="required">Business Justification</label><textarea id="justification" minlength="10" maxlength="2000" required></textarea></div>
+  </div><div class="actions" style="margin-top:16px"><button class="btn primary" type="submit">Submit Request</button><button class="btn light" type="reset">Clear</button></div></form></div>
+</section>
+
+<section class="page" id="my-requests">
+  <div class="row"><div><h2>My Requests</h2><div class="subtitle">Track request and completion status.</div></div><button class="btn light" id="exportRequestsBtn">Export</button></div>
+  <div class="card" style="margin-top:16px"><table><thead><tr><th>ID</th><th>Training</th><th>Division</th><th>Section</th><th>Hours</th><th>Status</th><th>Action</th></tr></thead><tbody id="requestRows"></tbody></table></div>
+</section>
+
+<section class="page" id="complete-training">
+  <h2>Complete Training</h2><div class="subtitle">Submit completion details to the same Section approval group.</div>
+  <div id="completionNotice" class="notice"></div>
+  <div class="card" style="margin-top:16px"><form id="completionForm" novalidate><div class="form-grid">
+    <div class="field full"><label class="required">Approved Request</label><select id="completionRequest" required></select></div>
+    <div class="field"><label class="required">Completion Date</label><input id="completionDate" type="date" required></div>
+    <div class="field"><label class="required">Actual Hours</label><input id="actualHours" type="number" min="0.5" max="80" step="0.5" required></div>
+    <div class="field"><label>Certificate Number</label><input id="certificateNumber" maxlength="100"></div>
+    <div class="field"><label>Certificate File</label><input id="certificateFile" type="file" accept=".pdf,.png,.jpg,.jpeg"></div>
+    <div class="field full"><label>Completion Notes</label><textarea id="completionNotes" maxlength="2000"></textarea></div>
+  </div><button class="btn success" style="margin-top:16px" type="submit">Submit Completion</button></form></div>
+</section>
+
+<section class="page" id="section-dashboard">
+  <h2>Section Supervisor Dashboard</h2><div class="subtitle">Manage employees and training activity in the assigned Section.</div>
+  <div class="grid metrics" style="margin-top:16px"><div class="card metric"><span>Section Employees</span><strong id="sectionEmployeeCount">0</strong></div><div class="card metric"><span>Pending Requests</span><strong id="sectionPendingCount">0</strong></div><div class="card metric"><span>Pending Completions</span><strong id="sectionCompletionCount">0</strong></div><div class="card metric"><span>Section Compliance</span><strong>71%</strong></div></div>
+  <div class="card" style="margin-top:16px"><h3>Section Employees</h3><table><thead><tr><th>Employee</th><th>Email</th><th>Role</th><th>Status</th></tr></thead><tbody id="sectionEmployeeRows"></tbody></table></div>
+</section>
+
+<section class="page" id="division-dashboard">
+  <h2>Division Supervisor Dashboard</h2><div class="subtitle">View all Sections, employees, approvals, and compliance under the Division.</div>
+  <div class="grid metrics" style="margin-top:16px"><div class="card metric"><span>Sections</span><strong id="divisionSectionCount">0</strong></div><div class="card metric"><span>Employees</span><strong id="divisionEmployeeCount">0</strong></div><div class="card metric"><span>Pending Escalations</span><strong id="divisionEscalationCount">0</strong></div><div class="card metric"><span>Division Compliance</span><strong>74%</strong></div></div>
+  <div class="card" style="margin-top:16px"><h3>Section Performance</h3><table><thead><tr><th>Section</th><th>Employees</th><th>Approval Group</th><th>Status</th></tr></thead><tbody id="divisionSectionRows"></tbody></table></div>
+</section>
+
+<section class="page" id="approver">
+  <h2>Approval Queue</h2><div class="subtitle">Only eligible approvers can act on pending records.</div>
+  <div class="grid two" style="margin-top:16px"><div class="card"><h3>Request Approvals</h3><div id="approvalQueue"></div></div><div class="card"><h3>Completion Reviews</h3><div id="completionQueue"></div></div></div>
+</section>
+
+<section class="page" id="admin">
+  <div class="row"><div><h2>Administrator Dashboard</h2><div class="subtitle">Full create, edit, activate/deactivate, validation, audit, and export functions.</div></div><button class="btn primary" id="saveAllBtn">Save All Changes</button></div>
+  <div id="adminNotice" class="notice"></div>
+  <div class="tabs">
+    <button class="active" data-tab="divisions">Divisions</button><button data-tab="sections">Sections</button><button data-tab="employees">Employees</button><button data-tab="groups">Approval Groups</button><button data-tab="members">Group Members</button><button data-tab="years">Program Years</button><button data-tab="references">Reference Data</button><button data-tab="audit">Audit Log</button><button data-tab="export">Export Center</button>
+  </div>
+  <div class="tab active" id="tab-divisions"><div class="card"><div class="row"><h3>Division Management</h3><button class="btn primary" data-action="add" data-entity="division">+ Add Division</button></div><table><thead><tr><th>Name</th><th>Code</th><th>Supervisor</th><th>Default Group</th><th>Status</th><th>Actions</th></tr></thead><tbody id="divisionRows"></tbody></table></div></div>
+  <div class="tab" id="tab-sections"><div class="card"><div class="row"><h3>Section Management</h3><button class="btn primary" data-action="add" data-entity="section">+ Add Section</button></div><table><thead><tr><th>Name</th><th>Code</th><th>Division</th><th>Supervisor</th><th>Approval Group</th><th>Status</th><th>Actions</th></tr></thead><tbody id="sectionRows"></tbody></table></div></div>
+  <div class="tab" id="tab-employees"><div class="card"><div class="row"><h3>Employee Management</h3><button class="btn primary" data-action="add" data-entity="employee">+ Add Employee</button></div><table><thead><tr><th>Name</th><th>Email</th><th>Division</th><th>Section</th><th>Supervisor Level</th><th>Role</th><th>Status</th><th>Actions</th></tr></thead><tbody id="employeeRows"></tbody></table></div></div>
+  <div class="tab" id="tab-groups"><div class="card"><div class="row"><h3>Approval Group Management</h3><button class="btn primary" data-action="add" data-entity="group">+ Add Group</button></div><table><thead><tr><th>Name</th><th>Scope</th><th>Division</th><th>Section</th><th>Method</th><th>Status</th><th>Actions</th></tr></thead><tbody id="groupRows"></tbody></table></div></div>
+  <div class="tab" id="tab-members"><div class="card"><div class="row"><h3>Approval Group Members</h3><button class="btn primary" data-action="add" data-entity="member">+ Add Member</button></div><table><thead><tr><th>Group</th><th>Approver</th><th>Role</th><th>Priority</th><th>Can Review Completion</th><th>Status</th><th>Actions</th></tr></thead><tbody id="memberRows"></tbody></table></div></div>
+  <div class="tab" id="tab-years"><div class="card"><div class="row"><h3>Program Years</h3><button class="btn primary" data-action="add" data-entity="year">+ Add Program Year</button></div><table><thead><tr><th>Name</th><th>Start</th><th>End</th><th>Target Hours</th><th>Current</th><th>Status</th><th>Actions</th></tr></thead><tbody id="yearRows"></tbody></table></div></div>
+  <div class="tab" id="tab-references"><div class="grid three"><div class="card"><div class="row"><h3>Platforms</h3><button class="btn primary" data-action="add" data-entity="platform">+ Add</button></div><div id="platformRows"></div></div><div class="card"><div class="row"><h3>Class Types</h3><button class="btn primary" data-action="add" data-entity="classType">+ Add</button></div><div id="classTypeRows"></div></div><div class="card"><div class="row"><h3>Categories</h3><button class="btn primary" data-action="add" data-entity="category">+ Add</button></div><div id="categoryRows"></div></div></div></div>
+  <div class="tab" id="tab-audit"><div class="card"><h3>Audit Log</h3><table><thead><tr><th>Date</th><th>Action</th><th>Entity</th><th>Record</th><th>Performed By</th></tr></thead><tbody id="auditRows"></tbody></table></div></div>
+  <div class="tab" id="tab-export"><div class="card"><h3>Export Center</h3><div class="actions"><button class="btn light" id="exportRequestsAdminBtn">Export Requests</button><button class="btn light" id="exportOrgBtn">Export Divisions & Sections</button><button class="btn light" id="exportApproversBtn">Export Approval Groups</button><button class="btn light" id="exportEmployeesBtn">Export Employees</button><button class="btn primary" id="backupBtn">Download JSON Backup</button><button class="btn danger" id="resetBtn">Reset Prototype Data</button></div></div></div>
+</section>
+
+<section class="page" id="reports"><h2>Executive Reports</h2><div class="subtitle">Organization-wide Division and Section reporting.</div><div class="grid metrics" style="margin-top:16px"><div class="card metric"><span>Divisions</span><strong id="reportDivisions">0</strong></div><div class="card metric"><span>Sections</span><strong id="reportSections">0</strong></div><div class="card metric"><span>Employees</span><strong id="reportEmployees">0</strong></div><div class="card metric"><span>Compliance</span><strong>76%</strong></div></div></section>
+</main></div>
+
+<div class="modal" id="modal"><div class="modal-card"><div class="row"><div><h3 id="modalTitle">Edit</h3><div class="subtitle" id="modalSubtitle"></div></div><button class="btn light" id="modalCloseBtn">Close</button></div><form id="entityForm" novalidate><input type="hidden" id="entityType"><input type="hidden" id="entityId"><div id="modalFields" class="form-grid" style="margin-top:16px"></div><div id="modalNotice" class="notice"></div><div class="actions" style="margin-top:18px"><button class="btn primary" type="submit">Save</button><button class="btn light" type="button" id="modalCancelBtn">Cancel</button></div></form></div></div>
+
+<script>
+'use strict';
+
+const STORAGE_KEY='idpDivisionSectionPublicDemoV1';
+const seed={
+ divisions:[
+  {id:'DIV1',name:'Operations Division',code:'OPS',supervisorId:'EMP3',defaultGroupId:'GRP2',active:true},
+  {id:'DIV2',name:'Technology Division',code:'TECH',supervisorId:'',defaultGroupId:'',active:true}
+ ],
+ sections:[
+  {id:'SEC1',name:'Learning Services',code:'LEARN',divisionId:'DIV1',supervisorId:'EMP2',defaultGroupId:'GRP1',active:true},
+  {id:'SEC2',name:'Administrative Services',code:'ADMIN',divisionId:'DIV1',supervisorId:'',defaultGroupId:'',active:true},
+  {id:'SEC3',name:'Customer Support',code:'SUPPORT',divisionId:'DIV1',supervisorId:'',defaultGroupId:'',active:true}
+ ],
+ employees:[
+  {id:'EMP1',name:'Alex Morgan',number:'DEMO001',email:'alex.morgan@example.com',divisionId:'DIV1',sectionId:'SEC1',supervisorLevel:'None',role:'Employee',targetHours:80,active:true},
+  {id:'EMP2',name:'Jordan Lee',number:'DEMO002',email:'jordan.lee@example.com',divisionId:'DIV1',sectionId:'SEC1',supervisorLevel:'Section Supervisor',role:'Approver',targetHours:80,active:true},
+  {id:'EMP3',name:'Taylor Brooks',number:'DEMO003',email:'taylor.brooks@example.com',divisionId:'DIV1',sectionId:'',supervisorLevel:'Division Supervisor',role:'Division Supervisor',targetHours:80,active:true},
+  {id:'EMP4',name:'Casey Rivera',number:'DEMO004',email:'casey.rivera@example.com',divisionId:'DIV1',sectionId:'SEC1',supervisorLevel:'None',role:'Approver',targetHours:80,active:true}
+ ],
+ groups:[
+  {id:'GRP1',name:'Learning Services Approvers',scope:'Section',divisionId:'DIV1',sectionId:'SEC1',method:'Any One Approver',active:true},
+  {id:'GRP2',name:'Operations Division Escalation',scope:'Division',divisionId:'DIV1',sectionId:'',method:'Any One Approver',active:true}
+ ],
+ members:[
+  {id:'MEM1',groupId:'GRP1',employeeId:'EMP2',role:'Section Supervisor',priority:1,canReviewCompletion:true,active:true},
+  {id:'MEM2',groupId:'GRP1',employeeId:'EMP4',role:'Alternate Approver',priority:2,canReviewCompletion:true,active:true},
+  {id:'MEM3',groupId:'GRP2',employeeId:'EMP3',role:'Division Supervisor',priority:1,canReviewCompletion:true,active:true}
+ ],
+ years:[{id:'YR1',name:'FY 2026-27',start:'2026-07-01',end:'2027-06-30',targetHours:80,current:true,active:true}],
+ platforms:[{id:'P1',name:'Microsoft Learn',active:true},{id:'P2',name:'LinkedIn Learning',active:true},{id:'P3',name:'Info-Tech',active:true}],
+ classTypes:[{id:'C1',name:'Online',active:true},{id:'C2',name:'Instructor-Led',active:true}],
+ categories:[{id:'CAT1',name:'Data Analytics',active:true},{id:'CAT2',name:'Application Development',active:true},{id:'CAT3',name:'Cybersecurity',active:true}],
+ requests:[
+  {id:'REQ-1001',employeeId:'EMP1',title:'Power BI Data Modeling',divisionId:'DIV1',sectionId:'SEC1',hours:16,cost:0,status:'Completed',escalation:false},
+  {id:'REQ-1002',employeeId:'EMP1',title:'Project Management Essentials',divisionId:'DIV1',sectionId:'SEC1',hours:12,cost:0,status:'Approved',escalation:false},
+  {id:'REQ-1003',employeeId:'EMP1',title:'Cybersecurity Refresher',divisionId:'DIV1',sectionId:'SEC1',hours:4,cost:0,status:'Pending',escalation:false}
+ ],
+ completions:[],
+ audit:[{date:'2026-07-16',action:'Organization model updated',entity:'System',record:'Division → Section → Employee',by:'Administrator'}]
+};
+
+let db=loadData();
+let current={name:'Alex Morgan',email:'alex.morgan@example.com',role:'Administrator',divisionId:'DIV1',sectionId:'SEC1'};
+
+const navMap={
+ Employee:[['Dashboard','dashboard'],['New Request','new-request'],['My Requests','my-requests'],['Complete Training','complete-training']],
+ 'Section Supervisor':[['Section Dashboard','section-dashboard'],['Request Approvals','approver'],['Completion Reviews','approver']],
+ 'Division Supervisor':[['Division Dashboard','division-dashboard'],['Approval Overview','approver'],['Executive Reports','reports']],
+ Approver:[['Approval Queue','approver'],['My Requests','my-requests']],
+ Administrator:[['Admin Dashboard','admin'],['Employee Dashboard','dashboard'],['Approval Queue','approver'],['Executive Reports','reports']],
+ Executive:[['Executive Reports','reports'],['Division Dashboard','division-dashboard']]
+};
+
+function $(id){return document.getElementById(id)}
+function clone(v){return JSON.parse(JSON.stringify(v))}
+function loadData(){try{const raw=localStorage.getItem(STORAGE_KEY);return raw?JSON.parse(raw):clone(seed)}catch(e){return clone(seed)}}
+function saveData(){localStorage.setItem(STORAGE_KEY,JSON.stringify(db))}
+function uid(prefix){return prefix+Date.now().toString(36)+Math.random().toString(36).slice(2,6)}
+function esc(v){return String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))}
+function badge(v){return `<span class="status ${esc(v)}">${esc(v)}</span>`}
+function byId(list,id){return list.find(x=>x.id===id)}
+function nameOf(list,id){return byId(list,id)?.name||''}
+function today(){return new Date().toISOString().slice(0,10)}
+function notify(id,message,type='ok'){const n=$(id);n.className=`notice show ${type}`;n.textContent=message;setTimeout(()=>n.classList.remove('show'),5000)}
+function audit(action,entity,record){db.audit.unshift({date:today(),action,entity,record,by:current.name});saveData()}
+function statusText(active){return active?'Active':'Inactive'}
+function actionButtons(entity,id,active){return `<div class="actions"><button class="btn light" data-action="edit" data-entity="${entity}" data-id="${id}">Edit</button><button class="btn ${active?'warning':'success'}" data-action="toggle" data-entity="${entity}" data-id="${id}">${active?'Deactivate':'Activate'}</button></div>`}
+
+function populateLogin(){
+ $('loginDivision').innerHTML=db.divisions.filter(x=>x.active).map(x=>`<option value="${x.id}">${esc(x.name)}</option>`).join('');
+ updateLoginSections();
+ $('loginDivision').addEventListener('change',updateLoginSections);
+}
+function updateLoginSections(){
+ const divId=$('loginDivision').value;
+ $('loginSection').innerHTML='<option value="">All / Not Assigned</option>'+db.sections.filter(x=>x.active&&x.divisionId===divId).map(x=>`<option value="${x.id}">${esc(x.name)}</option>`).join('');
+}
+function signIn(){
+ if(!$('loginName').value.trim()||!$('loginEmail').checkValidity()){alert('Enter a valid name and work email.');return}
+ current={name:$('loginName').value.trim(),email:$('loginEmail').value.trim().toLowerCase(),role:$('loginRole').value,divisionId:$('loginDivision').value,sectionId:$('loginSection').value};
+ $('login').classList.add('hidden');$('sideName').textContent=current.name;$('sideRole').textContent=current.role;$('sideDivision').textContent='Division: '+nameOf(db.divisions,current.divisionId);$('sideSection').textContent='Section: '+(nameOf(db.sections,current.sectionId)||'All / Not Assigned');$('headerUser').textContent=current.name+' · '+current.role;
+ $('requestEmployee').value=current.name;$('requestDivision').value=nameOf(db.divisions,current.divisionId);$('requestSection').value=nameOf(db.sections,current.sectionId);
+ buildNav();renderAll();
+}
+function logout(){$('login').classList.remove('hidden')}
+function buildNav(){
+ const items=navMap[current.role]||navMap.Employee;$('nav').innerHTML='';
+ items.forEach(([label,id],i)=>{const b=document.createElement('button');b.textContent=label;b.className=i?'':'active';b.addEventListener('click',()=>showPage(id,b));$('nav').appendChild(b)});
+ showPage(items[0][1],$('nav').querySelector('button'));
+}
+function showPage(id,button){
+ document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));$(id).classList.add('active');document.querySelectorAll('nav button').forEach(b=>b.classList.remove('active'));if(button)button.classList.add('active');
+}
+
+function renderAll(){
+ const division=nameOf(db.divisions,current.divisionId),section=nameOf(db.sections,current.sectionId);
+ document.querySelectorAll('[data-division]').forEach(x=>x.textContent=division);document.querySelectorAll('[data-section]').forEach(x=>x.textContent=section||'All');
+ const sec=byId(db.sections,current.sectionId),div=byId(db.divisions,current.divisionId);
+ $('dashboardApprovalGroup').textContent=nameOf(db.groups,sec?.defaultGroupId)||'Not configured';
+ $('dashboardEscalationGroup').textContent=nameOf(db.groups,div?.defaultGroupId)||'Not configured';
+ $('requestApprovalGroup').value=nameOf(db.groups,sec?.defaultGroupId)||'Not configured';
+ renderRequests();renderDashboards();renderApprovals();renderAdmin();renderReferenceSelects();
+}
+
+function renderRequests(){
+ const employee= db.employees.find(e=>e.email.toLowerCase()===current.email)||db.employees[0];
+ const mine=db.requests.filter(r=>r.employeeId===employee.id);
+ $('dashboardRows').innerHTML=mine.slice(0,3).map(r=>`<tr><td>${esc(r.title)}</td><td>${badge(r.status)}</td><td>${r.hours}</td></tr>`).join('')||'<tr><td colspan="3">No requests.</td></tr>';
+ $('requestRows').innerHTML=mine.map(r=>`<tr><td>${esc(r.id)}</td><td>${esc(r.title)}</td><td>${esc(nameOf(db.divisions,r.divisionId))}</td><td>${esc(nameOf(db.sections,r.sectionId))}</td><td>${r.hours}</td><td>${badge(r.status)}</td><td>${r.status==='Pending'||r.status==='Returned'?`<button class="btn danger" data-request-cancel="${r.id}">Cancel</button>`:''}</td></tr>`).join('')||'<tr><td colspan="7">No requests.</td></tr>';
+ $('completionRequest').innerHTML='<option value="">Select approved request</option>'+mine.filter(r=>r.status==='Approved').map(r=>`<option value="${r.id}">${esc(r.id+' - '+r.title)}</option>`).join('');
+ const completed=mine.filter(r=>r.status==='Completed').reduce((s,r)=>s+Number(r.hours||0),0);$('completedHours').textContent=completed;$('remainingHours').textContent=Math.max(0,80-completed);$('progressPct').textContent=Math.min(100,Math.round(completed/80*100))+'%';
+ document.querySelectorAll('[data-request-cancel]').forEach(b=>b.addEventListener('click',()=>cancelRequest(b.dataset.requestCancel)));
+}
+function cancelRequest(id){const r=byId(db.requests,id);if(!r)return;if(!confirm(`Cancel ${id}?`))return;r.status='Cancelled';audit('Cancelled request','Training Request',id);renderAll()}
+
+function renderDashboards(){
+ const secEmployees=db.employees.filter(e=>e.sectionId===current.sectionId&&e.active);$('sectionEmployeeCount').textContent=secEmployees.length;$('sectionPendingCount').textContent=db.requests.filter(r=>r.sectionId===current.sectionId&&r.status==='Pending').length;$('sectionCompletionCount').textContent=db.completions.filter(c=>c.sectionId===current.sectionId&&c.status==='Submitted').length;
+ $('sectionEmployeeRows').innerHTML=secEmployees.map(e=>`<tr><td>${esc(e.name)}</td><td>${esc(e.email)}</td><td>${esc(e.role)}</td><td>${badge(statusText(e.active))}</td></tr>`).join('')||'<tr><td colspan="4">No employees.</td></tr>';
+ const divSections=db.sections.filter(s=>s.divisionId===current.divisionId&&s.active);const divEmployees=db.employees.filter(e=>e.divisionId===current.divisionId&&e.active);$('divisionSectionCount').textContent=divSections.length;$('divisionEmployeeCount').textContent=divEmployees.length;$('divisionEscalationCount').textContent=db.requests.filter(r=>r.divisionId===current.divisionId&&r.escalation&&r.status==='Pending').length;
+ $('divisionSectionRows').innerHTML=divSections.map(s=>`<tr><td>${esc(s.name)}</td><td>${db.employees.filter(e=>e.sectionId===s.id&&e.active).length}</td><td>${esc(nameOf(db.groups,s.defaultGroupId)||'Not configured')}</td><td>${badge(statusText(s.active))}</td></tr>`).join('');
+ $('reportDivisions').textContent=db.divisions.filter(x=>x.active).length;$('reportSections').textContent=db.sections.filter(x=>x.active).length;$('reportEmployees').textContent=db.employees.filter(x=>x.active).length;
+}
+
+function canApproveRequest(r){
+ if(current.role==='Administrator'||current.role==='Approver')return true;
+ if(current.role==='Section Supervisor')return r.sectionId===current.sectionId;
+ if(current.role==='Division Supervisor')return r.divisionId===current.divisionId&&r.escalation;
+ return false;
+}
+function renderApprovals(){
+ const pending=db.requests.filter(r=>r.status==='Pending'&&canApproveRequest(r));
+ $('approvalQueue').innerHTML=pending.map(r=>`<div class="card" style="box-shadow:none;margin-bottom:10px"><b>${esc(r.title)}</b><p>${esc(nameOf(db.sections,r.sectionId))} · ${r.hours} hours${r.escalation?' · Division escalation':''}</p><div class="actions"><button class="btn success" data-decision="Approved" data-id="${r.id}">Approve</button><button class="btn warning" data-decision="Returned" data-id="${r.id}">Return</button><button class="btn danger" data-decision="Rejected" data-id="${r.id}">Reject</button></div></div>`).join('')||'<p>No pending requests.</p>';
+ document.querySelectorAll('[data-decision]').forEach(b=>b.addEventListener('click',()=>decideRequest(b.dataset.id,b.dataset.decision)));
+ const completions=db.completions.filter(c=>c.status==='Submitted');
+ $('completionQueue').innerHTML=completions.map(c=>`<div class="card" style="box-shadow:none;margin-bottom:10px"><b>${esc(c.requestId)}</b><p>${c.actualHours} hours · ${esc(c.completionDate)}</p><div class="actions"><button class="btn success" data-cdecision="Approved" data-cid="${c.id}">Approve</button><button class="btn warning" data-cdecision="Returned" data-cid="${c.id}">Return</button><button class="btn danger" data-cdecision="Rejected" data-cid="${c.id}">Reject</button></div></div>`).join('')||'<p>No pending completion reviews.</p>';
+ document.querySelectorAll('[data-cdecision]').forEach(b=>b.addEventListener('click',()=>decideCompletion(b.dataset.cid,b.dataset.cdecision)));
+}
+function decideRequest(id,status){const r=byId(db.requests,id);if(!r)return;if((status==='Rejected'||status==='Returned')&&!prompt('Enter comments:'))return;r.status=status;audit(status+' request','Training Request',id);renderAll()}
+function decideCompletion(id,status){const c=byId(db.completions,id);if(!c)return;if((status==='Rejected'||status==='Returned')&&!prompt('Enter comments:'))return;c.status=status;c.completedApprover=current.name;const r=byId(db.requests,c.requestId);if(r&&status==='Approved')r.status='Completed';audit(status+' completion','Training Completion',id);renderAll()}
+
+function renderAdmin(){
+ $('divisionRows').innerHTML=db.divisions.map(x=>`<tr><td>${esc(x.name)}</td><td>${esc(x.code)}</td><td>${esc(nameOf(db.employees,x.supervisorId)||'Not assigned')}</td><td>${esc(nameOf(db.groups,x.defaultGroupId)||'Not assigned')}</td><td>${badge(statusText(x.active))}</td><td>${actionButtons('division',x.id,x.active)}</td></tr>`).join('');
+ $('sectionRows').innerHTML=db.sections.map(x=>`<tr><td>${esc(x.name)}</td><td>${esc(x.code)}</td><td>${esc(nameOf(db.divisions,x.divisionId))}</td><td>${esc(nameOf(db.employees,x.supervisorId)||'Not assigned')}</td><td>${esc(nameOf(db.groups,x.defaultGroupId)||'Not assigned')}</td><td>${badge(statusText(x.active))}</td><td>${actionButtons('section',x.id,x.active)}</td></tr>`).join('');
+ $('employeeRows').innerHTML=db.employees.map(x=>`<tr><td>${esc(x.name)}</td><td>${esc(x.email)}</td><td>${esc(nameOf(db.divisions,x.divisionId))}</td><td>${esc(nameOf(db.sections,x.sectionId)||'All / Not assigned')}</td><td>${esc(x.supervisorLevel)}</td><td>${esc(x.role)}</td><td>${badge(statusText(x.active))}</td><td>${actionButtons('employee',x.id,x.active)}</td></tr>`).join('');
+ $('groupRows').innerHTML=db.groups.map(x=>`<tr><td>${esc(x.name)}</td><td>${esc(x.scope)}</td><td>${esc(nameOf(db.divisions,x.divisionId))}</td><td>${esc(nameOf(db.sections,x.sectionId)||'All Sections')}</td><td>${esc(x.method)}</td><td>${badge(statusText(x.active))}</td><td>${actionButtons('group',x.id,x.active)}</td></tr>`).join('');
+ $('memberRows').innerHTML=db.members.map(x=>`<tr><td>${esc(nameOf(db.groups,x.groupId))}</td><td>${esc(nameOf(db.employees,x.employeeId))}</td><td>${esc(x.role)}</td><td>${x.priority}</td><td>${x.canReviewCompletion?'Yes':'No'}</td><td>${badge(statusText(x.active))}</td><td>${actionButtons('member',x.id,x.active)}</td></tr>`).join('');
+ $('yearRows').innerHTML=db.years.map(x=>`<tr><td>${esc(x.name)}</td><td>${esc(x.start)}</td><td>${esc(x.end)}</td><td>${x.targetHours}</td><td>${x.current?'Yes':'No'}</td><td>${badge(statusText(x.active))}</td><td>${actionButtons('year',x.id,x.active)}</td></tr>`).join('');
+ renderRefList('platformRows','platform',db.platforms);renderRefList('classTypeRows','classType',db.classTypes);renderRefList('categoryRows','category',db.categories);
+ $('auditRows').innerHTML=db.audit.map(a=>`<tr><td>${esc(a.date)}</td><td>${esc(a.action)}</td><td>${esc(a.entity)}</td><td>${esc(a.record)}</td><td>${esc(a.by)}</td></tr>`).join('');
+ bindAdminActions();
+}
+function renderRefList(container,entity,list){$(container).innerHTML=list.map(x=>`<div class="row" style="padding:9px 0;border-bottom:1px solid var(--bd)"><div>${esc(x.name)}<div class="small">${statusText(x.active)}</div></div>${actionButtons(entity,x.id,x.active)}</div>`).join('')}
+function bindAdminActions(){document.querySelectorAll('[data-action][data-entity]').forEach(b=>b.onclick=()=>{const {action,entity,id}=b.dataset;if(action==='add'||action==='edit')openModal(entity,id||'');else if(action==='toggle')toggleEntity(entity,id)})}
+
+const configs={
+ division:{title:'Division',list:'divisions',prefix:'DIV',fields:[
+  {key:'name',label:'Division Name',type:'text',required:true,max:100},{key:'code',label:'Division Code',type:'text',required:true,max:20},{key:'supervisorId',label:'Division Supervisor',type:'select',options:()=>db.employees},{key:'defaultGroupId',label:'Default Approval Group',type:'select',options:()=>db.groups.filter(g=>g.scope==='Division')},{key:'active',label:'Active',type:'checkbox'}]},
+ section:{title:'Section',list:'sections',prefix:'SEC',fields:[
+  {key:'name',label:'Section Name',type:'text',required:true,max:100},{key:'code',label:'Section Code',type:'text',required:true,max:20},{key:'divisionId',label:'Division',type:'select',required:true,options:()=>db.divisions.filter(x=>x.active)},{key:'supervisorId',label:'Section Supervisor',type:'select',options:()=>db.employees},{key:'defaultGroupId',label:'Default Approval Group',type:'select',options:()=>db.groups.filter(g=>g.scope==='Section')},{key:'active',label:'Active',type:'checkbox'}]},
+ employee:{title:'Employee',list:'employees',prefix:'EMP',fields:[
+  {key:'name',label:'Employee Name',type:'text',required:true,max:150},{key:'number',label:'Employee Number',type:'text',required:true,max:20},{key:'email',label:'Email',type:'email',required:true,max:200},{key:'divisionId',label:'Division',type:'select',required:true,options:()=>db.divisions.filter(x=>x.active)},{key:'sectionId',label:'Section',type:'select',options:()=>db.sections.filter(x=>x.active)},{key:'supervisorLevel',label:'Supervisor Level',type:'select',required:true,static:['None','Section Supervisor','Division Supervisor']},{key:'role',label:'Role',type:'select',required:true,static:['Employee','Section Supervisor','Division Supervisor','Approver','Administrator','Executive']},{key:'targetHours',label:'Annual Target Hours',type:'number',required:true,min:0,max:500,step:.5},{key:'active',label:'Active',type:'checkbox'}]},
+ group:{title:'Approval Group',list:'groups',prefix:'GRP',fields:[
+  {key:'name',label:'Group Name',type:'text',required:true,max:150},{key:'scope',label:'Scope',type:'select',required:true,static:['Section','Division']},{key:'divisionId',label:'Division',type:'select',required:true,options:()=>db.divisions.filter(x=>x.active)},{key:'sectionId',label:'Section',type:'select',options:()=>db.sections.filter(x=>x.active)},{key:'method',label:'Approval Method',type:'select',required:true,static:['Any One Approver','All Approvers','Sequential Approval']},{key:'active',label:'Active',type:'checkbox'}]},
+ member:{title:'Approval Group Member',list:'members',prefix:'MEM',fields:[
+  {key:'groupId',label:'Approval Group',type:'select',required:true,options:()=>db.groups.filter(x=>x.active)},{key:'employeeId',label:'Approver',type:'select',required:true,options:()=>db.employees.filter(x=>x.active)},{key:'role',label:'Approver Role',type:'select',required:true,static:['Section Supervisor','Division Supervisor','Alternate Approver','Administrator']},{key:'priority',label:'Priority',type:'number',required:true,min:1,max:99,step:1},{key:'canReviewCompletion',label:'Can Review Completion',type:'checkbox'},{key:'active',label:'Active',type:'checkbox'}]},
+ year:{title:'Program Year',list:'years',prefix:'YR',fields:[
+  {key:'name',label:'Program Year Name',type:'text',required:true,max:50},{key:'start',label:'Start Date',type:'date',required:true},{key:'end',label:'End Date',type:'date',required:true},{key:'targetHours',label:'Default Target Hours',type:'number',required:true,min:0,max:500,step:.5},{key:'current',label:'Current Year',type:'checkbox'},{key:'active',label:'Active',type:'checkbox'}]},
+ platform:{title:'Training Platform',list:'platforms',prefix:'P',fields:[{key:'name',label:'Platform Name',type:'text',required:true,max:100},{key:'active',label:'Active',type:'checkbox'}]},
+ classType:{title:'Class Type',list:'classTypes',prefix:'C',fields:[{key:'name',label:'Class Type Name',type:'text',required:true,max:100},{key:'active',label:'Active',type:'checkbox'}]},
+ category:{title:'Training Category',list:'categories',prefix:'CAT',fields:[{key:'name',label:'Category Name',type:'text',required:true,max:100},{key:'active',label:'Active',type:'checkbox'}]}
+};
+
+function openModal(entity,id=''){
+ const cfg=configs[entity];if(!cfg)return;const list=db[cfg.list];const rec=id?byId(list,id):{};
+ $('entityType').value=entity;$('entityId').value=id;$('modalTitle').textContent=(id?'Edit ':'Add ')+cfg.title;$('modalSubtitle').textContent='Required fields are validated before saving.';
+ $('modalFields').innerHTML=cfg.fields.map(f=>fieldHtml(f,rec[f.key])).join('');$('modal').classList.add('show');
+ if(entity==='employee')bindEmployeeOrgFilter(rec.sectionId||'');if(entity==='group')bindGroupScopeFilter(rec.sectionId||'');
+}
+function fieldHtml(f,value){
+ const req=f.required?'required':'';const label=`<label class="${f.required?'required':''}">${esc(f.label)}</label>`;
+ if(f.type==='checkbox')return `<div class="field"><label><input id="fld_${f.key}" type="checkbox" ${value===undefined||value===true?'checked':''}> ${esc(f.label)}</label></div>`;
+ if(f.type==='select'){
+  const options=f.static?f.static.map(x=>({id:x,name:x})):(f.options?f.options():[]);
+  return `<div class="field">${label}<select id="fld_${f.key}" ${req}><option value="">Select</option>${options.map(o=>`<option value="${esc(o.id)}" ${String(value??'')===String(o.id)?'selected':''}>${esc(o.name)}</option>`).join('')}</select></div>`;
+ }
+ return `<div class="field">${label}<input id="fld_${f.key}" type="${f.type}" value="${esc(value??'')}" ${req} ${f.max?`maxlength="${f.max}"`:''} ${f.min!==undefined?`min="${f.min}"`:''} ${f.max!==undefined&&f.type==='number'?`max="${f.max}"`:''} ${f.step?`step="${f.step}"`:''}></div>`;
+}
+function bindEmployeeOrgFilter(selectedSection){
+ const div=$('fld_divisionId'),sec=$('fld_sectionId');if(!div||!sec)return;
+ const refresh=()=>{sec.innerHTML='<option value="">All / Not assigned</option>'+db.sections.filter(s=>s.active&&s.divisionId===div.value).map(s=>`<option value="${s.id}" ${s.id===selectedSection?'selected':''}>${esc(s.name)}</option>`).join('')};div.addEventListener('change',()=>{selectedSection='';refresh()});refresh();
+}
+function bindGroupScopeFilter(selectedSection){
+ const scope=$('fld_scope'),div=$('fld_divisionId'),sec=$('fld_sectionId');if(!scope||!div||!sec)return;
+ const refresh=()=>{sec.disabled=scope.value==='Division';sec.required=scope.value==='Section';sec.innerHTML='<option value="">All Sections</option>'+db.sections.filter(s=>s.active&&s.divisionId===div.value).map(s=>`<option value="${s.id}" ${s.id===selectedSection?'selected':''}>${esc(s.name)}</option>`).join('');if(scope.value==='Division')sec.value=''};
+ scope.addEventListener('change',refresh);div.addEventListener('change',()=>{selectedSection='';refresh()});refresh();
+}
+function closeModal(){$('modal').classList.remove('show');$('entityForm').reset();$('modalNotice').className='notice'}
+
+function saveEntity(e){
+ e.preventDefault();const entity=$('entityType').value,cfg=configs[entity],list=db[cfg.list],id=$('entityId').value;const rec=id?byId(list,id):{id:uid(cfg.prefix)};
+ let valid=true;
+ for(const f of cfg.fields){const el=$('fld_'+f.key);if(!el)continue;if(f.type==='checkbox')rec[f.key]=el.checked;else{if(!el.checkValidity()){valid=false;el.reportValidity();break}rec[f.key]=f.type==='number'?Number(el.value):el.value.trim()}}
+ if(!valid)return;
+ const err=validateBusinessRules(entity,rec,id);if(err){notify('modalNotice',err,'err');return}
+ if(!id)list.push(rec);
+ if(entity==='year'&&rec.current)db.years.forEach(y=>{if(y.id!==rec.id)y.current=false});
+ saveData();audit(id?'Updated':'Created',cfg.title,rec.name||rec.id);closeModal();renderAll();notify('adminNotice',`${cfg.title} saved successfully.`,'ok');
+}
+function validateBusinessRules(entity,rec,id){
+ if(['division','section','group','platform','classType','category','year'].includes(entity)){
+  const cfg=configs[entity],list=db[cfg.list];if(rec.name&&list.some(x=>x.id!==id&&x.name.trim().toLowerCase()===rec.name.trim().toLowerCase()))return `${cfg.title} name must be unique.`;
+ }
+ if(entity==='division'&&db.divisions.some(x=>x.id!==id&&x.code.toLowerCase()===rec.code.toLowerCase()))return 'Division code must be unique.';
+ if(entity==='section'&&db.sections.some(x=>x.id!==id&&x.divisionId===rec.divisionId&&x.code.toLowerCase()===rec.code.toLowerCase()))return 'Section code must be unique within the Division.';
+ if(entity==='employee'){
+  if(db.employees.some(x=>x.id!==id&&x.number.toLowerCase()===rec.number.toLowerCase()))return 'Employee number must be unique.';
+  if(db.employees.some(x=>x.id!==id&&x.email.toLowerCase()===rec.email.toLowerCase()))return 'Employee email must be unique.';
+  if(rec.sectionId&&byId(db.sections,rec.sectionId)?.divisionId!==rec.divisionId)return 'Selected Section must belong to the selected Division.';
+  if(rec.supervisorLevel==='Section Supervisor'&&!rec.sectionId)return 'A Section Supervisor must be assigned to a Section.';
+ }
+ if(entity==='group'){
+  if(rec.scope==='Section'&&!rec.sectionId)return 'A Section-scoped approval group requires a Section.';
+  if(rec.sectionId&&byId(db.sections,rec.sectionId)?.divisionId!==rec.divisionId)return 'Approval Group Section must belong to the selected Division.';
+ }
+ if(entity==='member'&&db.members.some(x=>x.id!==id&&x.groupId===rec.groupId&&x.employeeId===rec.employeeId))return 'This employee is already a member of the selected approval group.';
+ if(entity==='year'&&rec.end<=rec.start)return 'Program Year end date must be after the start date.';
+ return '';
+}
+function toggleEntity(entity,id){
+ const cfg=configs[entity],rec=byId(db[cfg.list],id);if(!rec)return;
+ if(rec.active&&entity==='division'&&db.sections.some(s=>s.divisionId===id&&s.active)){alert('Deactivate active Sections before deactivating this Division.');return}
+ if(rec.active&&entity==='section'&&db.employees.some(e=>e.sectionId===id&&e.active)){alert('Reassign or deactivate active employees before deactivating this Section.');return}
+ if(!confirm(`${rec.active?'Deactivate':'Activate'} ${rec.name||rec.id}?`))return;
+ rec.active=!rec.active;saveData();audit(rec.active?'Activated':'Deactivated',cfg.title,rec.name||rec.id);renderAll();notify('adminNotice',`${cfg.title} status updated.`,'ok');
+}
+
+function renderReferenceSelects(){
+ $('platform').innerHTML='<option value="">Select</option>'+db.platforms.filter(x=>x.active).map(x=>`<option>${esc(x.name)}</option>`).join('');
+}
+function submitRequest(e){
+ e.preventDefault();const form=$('requestForm');if(!form.checkValidity()){form.reportValidity();notify('requestNotice','Complete all required fields using valid values.','err');return}
+ const employee=db.employees.find(x=>x.email.toLowerCase()===current.email)||db.employees[0];const section=byId(db.sections,employee.sectionId||current.sectionId);if(!section?.defaultGroupId){notify('requestNotice','The employee Section does not have a default Approval Group. Contact an administrator.','err');return}
+ const cost=Number($('estimatedCost').value||0),hours=Number($('requestedHours').value);const id='REQ-'+String(1000+db.requests.length+1);
+ db.requests.push({id,employeeId:employee.id,title:$('trainingTitle').value.trim(),divisionId:employee.divisionId||current.divisionId,sectionId:employee.sectionId||current.sectionId,hours,cost,status:'Pending',escalation:cost>=1000});
+ saveData();audit('Submitted','Training Request',id);notify('requestNotice',cost>=1000?'Request submitted and flagged for Division escalation.':'Request submitted to the Section Approval Group.','ok');form.reset();renderAll();
+}
+function submitCompletion(e){
+ e.preventDefault();const form=$('completionForm');if(!form.checkValidity()){form.reportValidity();notify('completionNotice','Complete all required completion fields.','err');return}
+ const req=byId(db.requests,$('completionRequest').value);if(!req||req.status!=='Approved'){notify('completionNotice','Select a currently approved request.','err');return}
+ if(new Date($('completionDate').value)>new Date()){notify('completionNotice','Completion date cannot be in the future.','err');return}
+ const actual=Number($('actualHours').value);if(actual>80){notify('completionNotice','Actual hours cannot exceed 80 for one completion record.','err');return}
+ const id=uid('CMP');db.completions.push({id,requestId:req.id,employeeId:req.employeeId,divisionId:req.divisionId,sectionId:req.sectionId,completionDate:$('completionDate').value,actualHours:actual,certificateNumber:$('certificateNumber').value.trim(),notes:$('completionNotes').value.trim(),status:'Submitted',completedApprover:''});
+ req.status='Completion Submitted';saveData();audit('Submitted','Training Completion',id);notify('completionNotice','Completion submitted for Completion Review.','ok');form.reset();renderAll();
+}
+
+function csv(name,rows){const text=rows.map(r=>r.map(v=>`"${String(v??'').replaceAll('"','""')}"`).join(',')).join('\n');const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([text],{type:'text/csv;charset=utf-8'}));a.download=name;a.click();setTimeout(()=>URL.revokeObjectURL(a.href),0)}
+function exportEmployee(){csv('idp_employee_dashboard.csv',[['Metric','Value'],['Employee',current.name],['Division',nameOf(db.divisions,current.divisionId)],['Section',nameOf(db.sections,current.sectionId)],['Completed Hours',$('completedHours').textContent],['Target Hours',80]])}
+function exportRequests(){csv('idp_requests.csv',[['Request ID','Title','Division','Section','Hours','Cost','Status','Escalation'],...db.requests.map(r=>[r.id,r.title,nameOf(db.divisions,r.divisionId),nameOf(db.sections,r.sectionId),r.hours,r.cost,r.status,r.escalation?'Yes':'No'])])}
+function exportOrganizations(){csv('idp_divisions_sections.csv',[['Division','Division Code','Section','Section Code','Section Supervisor','Approval Group','Status'],...db.sections.map(s=>[nameOf(db.divisions,s.divisionId),byId(db.divisions,s.divisionId)?.code||'',s.name,s.code,nameOf(db.employees,s.supervisorId),nameOf(db.groups,s.defaultGroupId),statusText(s.active)])])}
+function exportApprovers(){csv('idp_approval_groups.csv',[['Group','Scope','Division','Section','Method','Approver','Role','Priority'],...db.members.map(m=>{const g=byId(db.groups,m.groupId);return[g?.name,g?.scope,nameOf(db.divisions,g?.divisionId),nameOf(db.sections,g?.sectionId),g?.method,nameOf(db.employees,m.employeeId),m.role,m.priority]})])}
+function exportEmployees(){csv('idp_employees.csv',[['Name','Employee Number','Email','Division','Section','Supervisor Level','Role','Target Hours','Status'],...db.employees.map(e=>[e.name,e.number,e.email,nameOf(db.divisions,e.divisionId),nameOf(db.sections,e.sectionId),e.supervisorLevel,e.role,e.targetHours,statusText(e.active)])])}
+function backup(){const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([JSON.stringify({exportedAt:new Date().toISOString(),organizationModel:'Division > Section > Employee',data:db},null,2)],{type:'application/json'}));a.download='idp_division_section_backup.json';a.click();setTimeout(()=>URL.revokeObjectURL(a.href),0)}
+function resetData(){if(!confirm('Reset all prototype changes to the original sample data?'))return;db=clone(seed);saveData();audit('Reset prototype data','System','All data');populateLogin();renderAll();notify('adminNotice','Prototype data reset.','info')}
+
+function init(){
+ populateLogin();
+ $('loginBtn').addEventListener('click',signIn);$('logoutBtn').addEventListener('click',logout);$('requestForm').addEventListener('submit',submitRequest);$('completionForm').addEventListener('submit',submitCompletion);$('entityForm').addEventListener('submit',saveEntity);$('modalCloseBtn').addEventListener('click',closeModal);$('modalCancelBtn').addEventListener('click',closeModal);$('modal').addEventListener('click',e=>{if(e.target===$('modal'))closeModal()});
+ $('exportEmployeeBtn').addEventListener('click',exportEmployee);$('exportRequestsBtn').addEventListener('click',exportRequests);$('exportRequestsAdminBtn').addEventListener('click',exportRequests);$('exportOrgBtn').addEventListener('click',exportOrganizations);$('exportApproversBtn').addEventListener('click',exportApprovers);$('exportEmployeesBtn').addEventListener('click',exportEmployees);$('backupBtn').addEventListener('click',backup);$('resetBtn').addEventListener('click',resetData);$('saveAllBtn').addEventListener('click',()=>{saveData();audit('Saved all changes','System','Local prototype storage');notify('adminNotice','All changes saved successfully.','ok')});
+ document.querySelectorAll('.tabs button').forEach(b=>b.addEventListener('click',()=>{document.querySelectorAll('.tabs button').forEach(x=>x.classList.remove('active'));document.querySelectorAll('.tab').forEach(x=>x.classList.remove('active'));b.classList.add('active');$('tab-'+b.dataset.tab).classList.add('active')}));
+ renderAll();
+}
+window.addEventListener('DOMContentLoaded',init);
+</script>
+</body>
+</html>
